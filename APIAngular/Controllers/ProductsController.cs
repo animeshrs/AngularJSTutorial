@@ -37,6 +37,7 @@ namespace APIAngular.Controllers
             var productBrands = await _iProductRepository.GetProductBrandsAsync();
             return Ok(productBrands);
         }
+   
         [HttpGet("types")]
         public async Task<ActionResult<ProductType>> GetProductTypes()
         {
