@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Core.Specification;
 
 namespace APIAngular.Controllers
 {
@@ -27,15 +28,16 @@ namespace APIAngular.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-
-            var products = await _iProductRepository.ListAllAsync();
+            var spec = new ProductWithTypeAndBrandSpecification();
+            var products = await _iProductRepository.ListAsync(spec);
             return Ok(products);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _iProductRepository.GetByIdAsync(id);
+            var spec = new ProductWithTypeAndBrandSpecification(id);
+            var product = await _iProductRepository.GetEntityWithSpec(spec);
             return Ok(product);
         }
 
