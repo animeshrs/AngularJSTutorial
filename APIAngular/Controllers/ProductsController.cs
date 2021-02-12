@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using APIAngular.Dtos;
+using AutoMapper;
 using Core.Specification;
 
 namespace APIAngular.Controllers
@@ -16,15 +17,18 @@ namespace APIAngular.Controllers
         private readonly IGenericRepository<Product> _iProductRepository;
         private readonly IGenericRepository<ProductType> _iProductTypeRepository;
         private readonly IGenericRepository<ProductBrand> _iProductBrandRepository;
+        private readonly IMapper _mapper;
 
 
         public ProductsController(IGenericRepository<Product> iProductRepository,
             IGenericRepository<ProductType> iProductTypeRepository,
-            IGenericRepository<ProductBrand> iProductBrandRepository)
+            IGenericRepository<ProductBrand> iProductBrandRepository,
+            IMapper mapper)
         {
             _iProductRepository = iProductRepository;
             _iProductTypeRepository = iProductTypeRepository;
             _iProductBrandRepository = iProductBrandRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -32,17 +36,7 @@ namespace APIAngular.Controllers
         {
             var spec = new ProductWithTypeAndBrandSpecification();
             var products = await _iProductRepository.ListAsync(spec);
-            var productDtos = products
-                .Select(p => new ProductToReturnDto
-                {
-                    ProductType = p.ProductType.Name,
-                    ProductBrand = p.ProductBrand.Name,
-                    Description = p.Description,
-                    Id = p.Id,
-                    Name = p.Name,
-                    PictureUrl = p.PictureUrl,
-                    Price = p.Price
-                }).ToList();
+            var productDtos = products.Select(_mapper.Map<Product, ProductToReturnDto>).ToList();
             return Ok(productDtos);
         }
 
@@ -51,16 +45,7 @@ namespace APIAngular.Controllers
         {
             var spec = new ProductWithTypeAndBrandSpecification(id);
             var product = await _iProductRepository.GetEntityWithSpec(spec);
-            var productDto = new ProductToReturnDto
-            {
-                ProductType = product.ProductType.Name,
-                ProductBrand = product.ProductBrand.Name,
-                Description = product.Description,
-                Id = product.Id,
-                Name = product.Name,
-                PictureUrl = product.PictureUrl,
-                Price = product.Price
-            };
+            var productDto = _mapper.Map<Product, ProductToReturnDto>(product);
             return Ok(productDto);
         }
 

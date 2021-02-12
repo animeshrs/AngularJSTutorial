@@ -1,3 +1,4 @@
+using APIAngular.Helpers;
 using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Data;
@@ -24,6 +25,8 @@ namespace APIAngular
         {
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddAutoMapper(typeof(MappingProfiles));
+
             services.AddControllers();
             services.AddDbContext<StoreContext>(x =>
                 x.UseSqlServer(_iConfiguration.GetConnectionString("DefaultConnection")));
