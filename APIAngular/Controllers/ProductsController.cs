@@ -2,7 +2,9 @@
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using APIAngular.Dtos;
 using Core.Specification;
 
 namespace APIAngular.Controllers
@@ -26,19 +28,40 @@ namespace APIAngular.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts()
+        public async Task<ActionResult<List<ProductToReturnDto>>> GetProducts()
         {
             var spec = new ProductWithTypeAndBrandSpecification();
             var products = await _iProductRepository.ListAsync(spec);
-            return Ok(products);
+            var productDtos = products
+                .Select(p => new ProductToReturnDto
+                {
+                    ProductType = p.ProductType.Name,
+                    ProductBrand = p.ProductBrand.Name,
+                    Description = p.Description,
+                    Id = p.Id,
+                    Name = p.Name,
+                    PictureUrl = p.PictureUrl,
+                    Price = p.Price
+                }).ToList();
+            return Ok(productDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
             var spec = new ProductWithTypeAndBrandSpecification(id);
             var product = await _iProductRepository.GetEntityWithSpec(spec);
-            return Ok(product);
+            var productDto = new ProductToReturnDto
+            {
+                ProductType = product.ProductType.Name,
+                ProductBrand = product.ProductBrand.Name,
+                Description = product.Description,
+                Id = product.Id,
+                Name = product.Name,
+                PictureUrl = product.PictureUrl,
+                Price = product.Price
+            };
+            return Ok(productDto);
         }
 
         [HttpGet("brands")]
