@@ -10,38 +10,46 @@ namespace APIAngular.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductRepository _iProductRepository;
+        private readonly IGenericRepository<Product> _iProductRepository;
+        private readonly IGenericRepository<ProductType> _iProductTypeRepository;
+        private readonly IGenericRepository<ProductBrand> _iProductBrandRepository;
 
-        public ProductsController(IProductRepository iProductRepository)
+
+        public ProductsController(IGenericRepository<Product> iProductRepository,
+            IGenericRepository<ProductType> iProductTypeRepository,
+            IGenericRepository<ProductBrand> iProductBrandRepository)
         {
             _iProductRepository = iProductRepository;
+            _iProductTypeRepository = iProductTypeRepository;
+            _iProductBrandRepository = iProductBrandRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            var products = await _iProductRepository.GetProductsAsync();
+
+            var products = await _iProductRepository.ListAllAsync();
             return Ok(products);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _iProductRepository.GetProductsByIdAsync(id);
+            var product = await _iProductRepository.GetByIdAsync(id);
             return Ok(product);
         }
 
         [HttpGet("brands")]
         public async Task<ActionResult<ProductBrand>> GetProductBrands()
         {
-            var productBrands = await _iProductRepository.GetProductBrandsAsync();
+            var productBrands = await _iProductBrandRepository.ListAllAsync();
             return Ok(productBrands);
         }
-   
+
         [HttpGet("types")]
         public async Task<ActionResult<ProductType>> GetProductTypes()
         {
-            var productTypes = await _iProductRepository.GetProductTypesAsync();
+            var productTypes = await _iProductTypeRepository.ListAllAsync();
             return Ok(productTypes);
         }
 
