@@ -33,9 +33,9 @@ namespace APIAngular.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProductToReturnDto>>> GetProducts()
+        public async Task<ActionResult<List<ProductToReturnDto>>> GetProducts([FromQuery]ProductSpecParams productSpecParams)
         {
-            var spec = new ProductWithTypeAndBrandSpecification();
+            var spec = new ProductWithTypeAndBrandSpecification(productSpecParams);
             var products = await _iProductRepository.ListAsync(spec);
             var productDtos = products.Select(_mapper.Map<Product, ProductToReturnDto>).ToList();
             return Ok(productDtos);
