@@ -10,9 +10,7 @@ using Core.Specification;
 
 namespace APIAngular.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProductsController : ControllerBase
+    public class ProductsController : BaseApiController
     {
         private readonly IGenericRepository<Product> _iProductRepository;
         private readonly IGenericRepository<ProductType> _iProductTypeRepository;
