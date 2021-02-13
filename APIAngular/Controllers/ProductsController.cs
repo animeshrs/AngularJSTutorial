@@ -3,10 +3,13 @@ using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using APIAngular.Dtos;
+using APIAngular.Errors;
 using AutoMapper;
 using Core.Specification;
+using Microsoft.AspNetCore.Http;
 
 namespace APIAngular.Controllers
 {
@@ -39,10 +42,14 @@ namespace APIAngular.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
             var spec = new ProductWithTypeAndBrandSpecification(id);
             var product = await _iProductRepository.GetEntityWithSpec(spec);
+            if (product == null)
+                return NotFound(new ApiResponse((int)HttpStatusCode.NotFound));
             var productDto = _mapper.Map<Product, ProductToReturnDto>(product);
             return Ok(productDto);
         }
