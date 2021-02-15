@@ -10,6 +10,7 @@ using APIAngular.Errors;
 using AutoMapper;
 using Core.Specification;
 using Microsoft.AspNetCore.Http;
+using APIAngular.Helpers;
 
 namespace APIAngular.Controllers
 {
@@ -33,12 +34,23 @@ namespace APIAngular.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ProductToReturnDto>>> GetProducts([FromQuery]ProductSpecParams productSpecParams)
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] ProductSpecParams productSpecParams)
         {
             var spec = new ProductWithTypeAndBrandSpecification(productSpecParams);
+            var countSpec = new ProductWithFiltersForCountSpecification(productSpecParams);
+            var totalItems = await _iProductRepository.CountAsync(countSpec);
+
             var products = await _iProductRepository.ListAsync(spec);
             var productDtos = products.Select(_mapper.Map<Product, ProductToReturnDto>).ToList();
-            return Ok(productDtos);
+
+            var result = new Pagination<ProductToReturnDto>(
+                productSpecParams.PageIndex,
+                productSpecParams.PageSize,
+                totalItems,
+                productDtos
+            );
+            return Ok(result
+            );
         }
 
         [HttpGet("{id}")]
