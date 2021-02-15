@@ -1,10 +1,10 @@
 let x;
 x = 123;
-x = "xyz";
+x = 'xyz';
 
 let y: number | string;
 y = 123;
-y = "xyz";
+y = 'xyz';
 
 let z: number;
 z = 123;
