@@ -1,26 +1,27 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { IBrands } from '../shared/models/brands';
-import { IProduct } from '../shared/models/product';
-import { ShopParams } from '../shared/models/shopParams';
-import { ITypes } from '../shared/models/types';
-import { ShopService } from './shop.service';
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { IBrands } from "../shared/models/brands";
+import { IProduct } from "../shared/models/product";
+import { ShopParams } from "../shared/models/shopParams";
+import { ITypes } from "../shared/models/types";
+import { ShopService } from "./shop.service";
 
 @Component({
-  selector: 'app-shop',
-  templateUrl: './shop.component.html',
-  styleUrls: ['./shop.component.scss'],
+  selector: "app-shop",
+  templateUrl: "./shop.component.html",
+  styleUrls: ["./shop.component.scss"],
 })
 export class ShopComponent implements OnInit {
-  @ViewChild('search', { static: true }) searchTerm: ElementRef;
+  @ViewChild("search", { static: true }) searchTerm: ElementRef;
   products: IProduct[];
+  productId: number;
   brands: IBrands[];
   types: ITypes[];
   shopParams = new ShopParams();
   totalCount: number;
   sortOptions = [
-    { name: 'Alphabetical', value: 'name' },
-    { name: 'Price: Low to High', value: 'priceAsc' },
-    { name: 'Price: High to Low', value: 'priceDesc' },
+    { name: "Alphabetical", value: "name" },
+    { name: "Price: Low to High", value: "priceAsc" },
+    { name: "Price: High to Low", value: "priceDesc" },
   ];
 
   constructor(private shopService: ShopService) {}
@@ -45,10 +46,21 @@ export class ShopComponent implements OnInit {
     );
   }
 
+  getProduct() {
+    this.shopService.getProduct(this.productId).subscribe(
+      (response) => {
+        console.log(response);
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
   getBrands() {
     this.shopService.getBrands().subscribe(
       (response) => {
-        this.brands = [{ id: 0, name: 'All' }, ...response];
+        this.brands = [{ id: 0, name: "All" }, ...response];
       },
       (error) => console.log(error)
     );
@@ -57,7 +69,7 @@ export class ShopComponent implements OnInit {
   getTypes() {
     this.shopService.getTypes().subscribe(
       (response) => {
-        this.types = [{ id: 0, name: 'All' }, ...response];
+        this.types = [{ id: 0, name: "All" }, ...response];
       },
       (error) => console.log(error)
     );
@@ -94,7 +106,7 @@ export class ShopComponent implements OnInit {
   }
 
   onReset() {
-    this.searchTerm.nativeElement.value = '';
+    this.searchTerm.nativeElement.value = "";
     this.shopParams = new ShopParams();
     this.getProducts();
   }
